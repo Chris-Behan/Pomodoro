@@ -9,7 +9,7 @@ import alarm from './assets/alarm.mp3';
 function Timer() {
   const hhmmssFormat = "HH:mm:ss";
   const mmssFormat = "mm:ss";
-  const [ratio, setRatio] = useState(new PomodoroRatio(1, 5));
+  const [ratio, setRatio] = useState(new PomodoroRatio(25, 5));
   const [count, setCount] = useState(0);
   const [speed, setSpeed] = useState(null);
   const [time, setTime] = useState(ratio.getFocusTime());
