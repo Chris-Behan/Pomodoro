@@ -3,14 +3,21 @@ import useInterval from "./useInterval";
 import PomodoroRatio from "./PomodoroRatio";
 import "./App.css";
 import Button from '@material-ui/core/Button';
+import {Howl, Howler} from 'howler';
+import alarm from './assets/alarm.mp3';
 
 function Timer() {
   const hhmmssFormat = "HH:mm:ss";
   const mmssFormat = "mm:ss";
-  const [ratio, setRatio] = useState(new PomodoroRatio(1, 1));
+  const [ratio, setRatio] = useState(new PomodoroRatio(25, 5));
   const [count, setCount] = useState(0);
   const [speed, setSpeed] = useState(null);
   const [time, setTime] = useState(ratio.getFocusTime());
+
+  let sound = new Howl({
+    src: [alarm],
+    volume: .5,
+  })
 
   useEffect(() => {
     document.title = formatTime(time);
@@ -25,6 +32,7 @@ function Timer() {
         ratio.setFocus(true);
         setRatio(ratio);
       }
+      sound.play();
     }
   });
 
