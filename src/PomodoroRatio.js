@@ -7,12 +7,20 @@ class PomodoroRatio{
     this.focusing = true;
   }
 
-  setFocusMinutes(time){
-    this.focusMinutes = time;
+  setFocusMinutes(mins){
+    this.focusMinutes = mins;
   }
 
-  setBreakMinutes(time){
-    this.breakMinutes = time; 
+  setBreakMinutes(mins){
+    this.breakMinutes = mins; 
+  }
+
+  getFocusMinutes(){
+    return this.focusMinutes;
+  }
+
+  getBreakMinutes(){
+    return this.breakMinutes;
   }
 
   getFocusTime(){
@@ -25,6 +33,10 @@ class PomodoroRatio{
 
   setFocus(val){
     this.focusing = val;
+  }
+
+  getFocus(){
+    return this.focusing;
   }
 
   getStatus(){
