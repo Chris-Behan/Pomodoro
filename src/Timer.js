@@ -2,13 +2,19 @@ import React, { useState, useEffect } from "react";
 import useInterval from "./useInterval";
 import PomodoroRatio from "./PomodoroRatio";
 import "./App.css";
-import Button from '@material-ui/core/Button';
-import {Howl, Howler} from 'howler';
-import alarm from './assets/alarm.mp3';
+import Button from "@material-ui/core/Button";
+import Fab from "@material-ui/core/Fab";
+import EditIcon from "@material-ui/icons/Edit";
+import Modal from "@material-ui/core/Modal";
+import { Howl, Howler } from "howler";
+import alarm from "./assets/alarm.mp3";
+import TimeEditor from "./TimeEditer";
+import ls from 'local-storage';
 
 function Timer() {
   const hhmmssFormat = "HH:mm:ss";
   const mmssFormat = "mm:ss";
+  const [editing, setEdit] = useState(false);
   const [ratio, setRatio] = useState(new PomodoroRatio(25, 5));
   const [count, setCount] = useState(0);
   const [speed, setSpeed] = useState(null);
@@ -16,8 +22,16 @@ function Timer() {
 
   let sound = new Howl({
     src: [alarm],
-    volume: .5,
-  })
+    volume: 0.5,
+  });
+
+  useEffect(() => {
+    let savedFocusMins = ls.get('focusMins');
+    let savedBreakMins = ls.get('breakMins');
+    if( savedFocusMins !== null && savedBreakMins !== null ){
+      setRatio(new PomodoroRatio(savedFocusMins, savedBreakMins));
+    }
+  }, []);
 
   useEffect(() => {
     document.title = formatTime(time);
@@ -36,6 +50,16 @@ function Timer() {
     }
   });
 
+  useEffect(() => {
+    if (speed === null) {
+      if (ratio.focusing) {
+        setTime(ratio.getFocusTime());
+      } else {
+        setTime(ratio.getBreakTime());
+      }
+    }
+  }, [ratio]);
+
   useInterval(() => {
     setTime(time.subtract(1, "seconds"));
     setCount(count + 1);
@@ -53,22 +77,55 @@ function Timer() {
 
   function resetTimer(e) {
     e.preventDefault();
-    setTime(ratio.getFocusTime());
+    if (ratio.focusing) {
+      setTime(ratio.getFocusTime());
+    } else {
+      setTime(ratio.getBreakTime());
+    }
   }
 
   function formatTime(t) {
     return t.hours() < 1 ? t.format(mmssFormat) : t.format(hhmmssFormat);
   }
 
+  function handleEdit(e) {
+    setEdit(!editing);
+  }
+
   return (
-    <div className="TimerContainer">
-      <div>{ratio.getStatus()}</div>
-      <div>{formatTime(time)}</div>
-      <div className="TimerButtons">
-        <Button size="large" color="primary" onClick={startTimer}>Start</Button>
-        <Button size="large" color="secondary" onClick={stopTimer}>Stop</Button>
-        <Button size="large" color="inherit" onClick={resetTimer}>Reset</Button>
+    <div>
+      <div className="TimerContainer">
+        <div>{ratio.getStatus()}</div>
+        <div>{formatTime(time)}</div>
+        <div className="TimerButtons">
+          <Button size="large" color="primary" onClick={startTimer}>
+            Start
+          </Button>
+          <Button size="large" color="secondary" onClick={stopTimer}>
+            Stop
+          </Button>
+          <Button size="large" color="inherit" onClick={resetTimer}>
+            Reset
+          </Button>
+        </div>
       </div>
+      <Fab id="edit" color="secondary" aria-label="edit" onClick={handleEdit}>
+        <EditIcon />
+      </Fab>
+      <Modal
+        open={editing}
+        onClose={handleEdit}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <TimeEditor
+          editing={editing}
+          focusing={ratio.focusing}
+          setEdit={setEdit}
+          pomodoroRatio={ratio}
+          setRatio={setRatio}
+        />
+      </Modal>
     </div>
   );
 }

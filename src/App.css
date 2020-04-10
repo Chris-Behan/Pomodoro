@@ -25,3 +25,30 @@
     display: flex;
     justify-content: space-between;
 }
+
+#edit {
+    margin: 0px;
+    top: auto;
+    right: 20px;
+    bottom: 20px;
+    left: auto;
+    position: fixed;
+}
+
+#paper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-content: space-evenly;
+  justify-content: space-evenly;
+  width: 30%;
+  height: 20%;
+  padding: 2%;
+}
+
+.timefield{
+    padding: 10%;
+}
