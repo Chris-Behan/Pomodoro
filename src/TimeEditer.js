@@ -7,7 +7,10 @@ import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import ls from "local-storage";
-
+/**
+ * React component for editing focus and break times.
+ * @param {*} props
+ */
 function TimeEditor(props) {
   let ratio = props.pomodoroRatio;
   const focusing = props.focusing;
@@ -16,27 +19,47 @@ function TimeEditor(props) {
   const setRatio = props.setRatio;
   const [focusMins, setFocusMins] = useState(ratio.getFocusMinutes());
   const [breakMins, setBreakMins] = useState(ratio.getBreakMinutes());
+  const [focusError, setFocusError] = useState(false);
+  const [breakError, setBreakError] = useState(false);
+  const [focusErrMsg, setFocusErrMsg] = useState("");
+  const [breakErrMsg, setBreakErrMsg] = useState("");
+
+  useEffect(() => {
+    if (focusMins < 1 || focusMins > 1439) {
+      setFocusError(true);
+      setFocusErrMsg("Invalid Input");
+    }
+    if (breakMins < 1 || breakMins > 1439) {
+      setBreakError(true);
+      setBreakErrMsg("Invalid Input");
+    }
+    if (focusMins >= 1 && focusMins <= 1439) {
+      setFocusError(false);
+      setFocusErrMsg("");
+    }
+    if (breakMins >= 1 && breakMins <= 1439) {
+      setBreakError(false);
+      setBreakErrMsg("");
+    }
+  }, [focusMins, breakMins]);
 
   function handleFocusMinuteChange(e) {
-    if (e.target.value < 1 || e.target.value > 1439) {
-      return;
-    }
     setFocusMins(e.target.value);
   }
 
   function handleBreakMinuteChange(e) {
-    if (e.target.value < 1 || e.target.value > 1440) {
-      return;
-    }
     setBreakMins(e.target.value);
   }
 
   function handleEdit(e) {
+    if (focusError || breakError) {
+      return;
+    }
     ratio = new PomodoroRatio(focusMins, breakMins);
     ratio.setFocus(focusing);
     setRatio(ratio);
-    ls.set('focusMins', focusMins);
-    ls.set('breakMins', breakMins);
+    ls.set("focusMins", focusMins);
+    ls.set("breakMins", breakMins);
     setEdit(!editing);
   }
 
@@ -44,6 +67,8 @@ function TimeEditor(props) {
     <Fade in={editing}>
       <Paper id="paper">
         <TextField
+          error={focusError}
+          helperText={focusErrMsg}
           type="number"
           defaultValue={ratio.getFocusMinutes()}
           value={focusMins}
@@ -56,6 +81,8 @@ function TimeEditor(props) {
           }}
         ></TextField>
         <TextField
+          error={breakError}
+          helperText={breakErrMsg}
           label="Break time"
           type="number"
           defaultValue={ratio.getBreakMinutes()}

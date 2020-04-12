@@ -9,10 +9,10 @@ import Modal from "@material-ui/core/Modal";
 import { Howl, Howler } from "howler";
 import alarm from "./assets/alarm.mp3";
 import TimeEditor from "./TimeEditer";
-import ls from 'local-storage';
+import ls from "local-storage";
 
 function Timer() {
-  const hhmmssFormat = "HH:mm:ss";
+  const hhmmssFormat = "H:mm:ss";
   const mmssFormat = "mm:ss";
   const [editing, setEdit] = useState(false);
   const [ratio, setRatio] = useState(new PomodoroRatio(25, 5));
@@ -26,9 +26,9 @@ function Timer() {
   });
 
   useEffect(() => {
-    let savedFocusMins = ls.get('focusMins');
-    let savedBreakMins = ls.get('breakMins');
-    if( savedFocusMins !== null && savedBreakMins !== null ){
+    let savedFocusMins = ls.get("focusMins");
+    let savedBreakMins = ls.get("breakMins");
+    if (savedFocusMins !== null && savedBreakMins !== null) {
       setRatio(new PomodoroRatio(savedFocusMins, savedBreakMins));
     }
   }, []);
