@@ -11,6 +11,9 @@ import alarm from "./assets/alarm.mp3";
 import TimeEditor from "./TimeEditer";
 import ls from "local-storage";
 
+/**
+ * React component for the Timer.
+ */
 function Timer() {
   const hhmmssFormat = "H:mm:ss";
   const mmssFormat = "mm:ss";
@@ -25,6 +28,7 @@ function Timer() {
     volume: 0.5,
   });
 
+  // Effect called once upon loading the website.
   useEffect(() => {
     let savedFocusMins = ls.get("focusMins");
     let savedBreakMins = ls.get("breakMins");
@@ -33,6 +37,7 @@ function Timer() {
     }
   }, []);
 
+  // Effect used to trigger the timer when it reaches 0 and handle the state change.
   useEffect(() => {
     document.title = formatTime(time);
     // When timer reaches 0, switch focus state and reset timer.
@@ -50,6 +55,7 @@ function Timer() {
     }
   });
 
+  // Effect used set the timer when it is not running.
   useEffect(() => {
     if (speed === null) {
       if (ratio.focusing) {
@@ -59,22 +65,35 @@ function Timer() {
       }
     }
   }, [ratio]);
-
+  
+  // Effect used to count down the timer.
   useInterval(() => {
     setTime(time.subtract(1, "seconds"));
     setCount(count + 1);
   }, speed);
 
+  /**
+   * Starts the timer.
+   * @param {event} e 
+   */
   function startTimer(e) {
     e.preventDefault();
     setSpeed(1000);
   }
 
+  /**
+   * Stops the timer.
+   * @param {event} e 
+   */
   function stopTimer(e) {
     e.preventDefault();
     setSpeed(null);
   }
 
+  /**
+   * Resets the timer.
+   * @param {event} e 
+   */
   function resetTimer(e) {
     e.preventDefault();
     if (ratio.focusing) {
@@ -84,10 +103,19 @@ function Timer() {
     }
   }
 
+  /**
+   * Format's the moment object to a time string.
+   * @param {moment} t 
+   * @return {string} string representation of the moment object.
+   */
   function formatTime(t) {
     return t.hours() < 1 ? t.format(mmssFormat) : t.format(hhmmssFormat);
   }
 
+  /**
+   * Handles whether or not we are in an editing state.
+   * @param {event} e 
+   */
   function handleEdit(e) {
     setEdit(!editing);
   }

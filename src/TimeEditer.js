@@ -24,6 +24,7 @@ function TimeEditor(props) {
   const [focusErrMsg, setFocusErrMsg] = useState("");
   const [breakErrMsg, setBreakErrMsg] = useState("");
 
+  // Validates input, setting and unsetting error text.
   useEffect(() => {
     if (focusMins < 1 || focusMins > 1439) {
       setFocusError(true);
@@ -43,14 +44,16 @@ function TimeEditor(props) {
     }
   }, [focusMins, breakMins]);
 
+  // Handles a change to focus minutes.
   function handleFocusMinuteChange(e) {
     setFocusMins(e.target.value);
   }
 
+  // Handles a change to break minutes.
   function handleBreakMinuteChange(e) {
     setBreakMins(e.target.value);
   }
-
+  // Handled edit, triggered by clicking OK.
   function handleEdit(e) {
     if (focusError || breakError) {
       return;
