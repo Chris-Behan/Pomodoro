@@ -25,12 +25,10 @@ function Timer() {
   const [speed, setSpeed] = useState(null);
   const [time, setTime] = useState(ratio.getFocusTime());
   const [counter, setCounter] = useState(0);
-  const [muteVisible, setMuteVisible] = useState(false);
 
-  var sound = new Howl({
+  let sound = new Howl({
     src: [alarm],
     volume: 0.5,
-    onend: () => setMuteVisible(false),
   });
 
   // Effect called once upon loading the website.
@@ -58,7 +56,7 @@ function Timer() {
         setRatio(ratio);
         setSpeed(null);
       }
-      handleAlarm();
+      sound.play();
     }
   });
 
@@ -127,25 +125,6 @@ function Timer() {
     setEdit(!editing);
   }
 
-  /**
-   * Function called when it is time for the alarm to sound.
-   */
-  function handleAlarm(){
-    setMuteVisible(true);
-    sound.play();
-  }
-
-  /**
-   * Function triggered when the mute button is clicked.
-   */
-  function stopAlarm(e){
-    e.preventDefault();
-    this.stop();
-    setMuteVisible(false);
-  }
-  stopAlarm.bind(sound);
- 
-
   return (
     <div className="Container">
       <div className="TimerContainer">
@@ -164,11 +143,6 @@ function Timer() {
           </Button>
         </div>
       </div>
-      <Zoom in={muteVisible}>
-      <Fab id="snooze" onClick={stopAlarm}>
-        <AlarmOffIcon />
-      </Fab>
-      </Zoom>
       <Fab id="edit" color="secondary" aria-label="edit" onClick={handleEdit}>
         <EditIcon />
       </Fab>
