@@ -10,6 +10,8 @@ import { Howl, Howler } from "howler";
 import alarm from "./assets/alarm.mp3";
 import TimeEditor from "./TimeEditer";
 import ls from "local-storage";
+import AlarmOffIcon from "@material-ui/icons/AlarmOff";
+import Zoom from '@material-ui/core/Zoom';
 
 /**
  * React component for the Timer.
@@ -22,10 +24,13 @@ function Timer() {
   const [count, setCount] = useState(0);
   const [speed, setSpeed] = useState(null);
   const [time, setTime] = useState(ratio.getFocusTime());
+  const [counter, setCounter] = useState(0);
+  const [muteVisible, setMuteVisible] = useState(false);
 
-  let sound = new Howl({
+  var sound = new Howl({
     src: [alarm],
     volume: 0.5,
+    onend: () => setMuteVisible(false),
   });
 
   // Effect called once upon loading the website.
@@ -46,12 +51,14 @@ function Timer() {
         setTime(ratio.getBreakTime());
         ratio.setFocus(false);
         setRatio(ratio);
+        setCounter(counter + 1);
       } else {
         setTime(ratio.getFocusTime());
         ratio.setFocus(true);
         setRatio(ratio);
+        setSpeed(null);
       }
-      sound.play();
+      handleAlarm();
     }
   });
 
@@ -65,7 +72,7 @@ function Timer() {
       }
     }
   }, [ratio]);
-  
+
   // Effect used to count down the timer.
   useInterval(() => {
     setTime(time.subtract(1, "seconds"));
@@ -74,7 +81,7 @@ function Timer() {
 
   /**
    * Starts the timer.
-   * @param {event} e 
+   * @param {event} e
    */
   function startTimer(e) {
     e.preventDefault();
@@ -83,7 +90,7 @@ function Timer() {
 
   /**
    * Stops the timer.
-   * @param {event} e 
+   * @param {event} e
    */
   function stopTimer(e) {
     e.preventDefault();
@@ -92,7 +99,7 @@ function Timer() {
 
   /**
    * Resets the timer.
-   * @param {event} e 
+   * @param {event} e
    */
   function resetTimer(e) {
     e.preventDefault();
@@ -105,7 +112,7 @@ function Timer() {
 
   /**
    * Format's the moment object to a time string.
-   * @param {moment} t 
+   * @param {moment} t
    * @return {string} string representation of the moment object.
    */
   function formatTime(t) {
@@ -114,17 +121,37 @@ function Timer() {
 
   /**
    * Handles whether or not we are in an editing state.
-   * @param {event} e 
+   * @param {event} e
    */
   function handleEdit(e) {
     setEdit(!editing);
   }
 
+  /**
+   * Function called when it is time for the alarm to sound.
+   */
+  function handleAlarm(){
+    setMuteVisible(true);
+    sound.play();
+  }
+
+  /**
+   * Function triggered when the mute button is clicked.
+   */
+  function stopAlarm(e){
+    e.preventDefault();
+    this.stop();
+    setMuteVisible(false);
+  }
+  stopAlarm.bind(sound);
+ 
+
   return (
-    <div>
+    <div className="Container">
       <div className="TimerContainer">
         <div>{ratio.getStatus()}</div>
         <div>{formatTime(time)}</div>
+        <div id="counter">Pomodoros: {counter}</div>
         <div className="TimerButtons">
           <Button size="large" color="primary" onClick={startTimer}>
             Start
@@ -137,6 +164,11 @@ function Timer() {
           </Button>
         </div>
       </div>
+      <Zoom in={muteVisible}>
+      <Fab id="snooze" onClick={stopAlarm}>
+        <AlarmOffIcon />
+      </Fab>
+      </Zoom>
       <Fab id="edit" color="secondary" aria-label="edit" onClick={handleEdit}>
         <EditIcon />
       </Fab>

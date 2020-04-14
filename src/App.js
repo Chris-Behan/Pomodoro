@@ -16,7 +16,7 @@ function App() {
     },
   });
   return (
-    <div className="Container">
+    <div>
       <ThemeProvider theme={theme}>
         <Timer></Timer>
       </ThemeProvider>

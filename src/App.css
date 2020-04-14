@@ -48,6 +48,15 @@
   margin-bottom: 40%;
 }
 
+#snooze {
+    background-color: rebeccapurple;
+    position: relative;
+}
+
+#counter {
+    font-size: 25%;
+}
+
 .timefield{
     padding: 10%;
 }
