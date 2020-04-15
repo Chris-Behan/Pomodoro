@@ -25,10 +25,12 @@ function Timer() {
   const [speed, setSpeed] = useState(null);
   const [time, setTime] = useState(ratio.getFocusTime());
   const [counter, setCounter] = useState(0);
+  const [muteVisible, setMuteVisible] = useState(false);
 
-  let sound = new Howl({
+  var sound = new Howl({
     src: [alarm],
     volume: 0.5,
+    onend: () => setMuteVisible(false),
   });
 
   // Effect called once upon loading the website.
@@ -46,17 +48,11 @@ function Timer() {
     // When timer reaches 0, switch focus state and reset timer.
     if (time.hours() === 0 && time.minutes() === 0 && time.seconds() === 0) {
       if (ratio.focusing) {
-        setTime(ratio.getBreakTime());
-        ratio.setFocus(false);
-        setRatio(ratio);
-        setCounter(counter + 1);
+        endOfFocus();
       } else {
-        setTime(ratio.getFocusTime());
-        ratio.setFocus(true);
-        setRatio(ratio);
-        setSpeed(null);
+        endOfBreak();
       }
-      sound.play();
+      handleAlarm();
     }
   });
 
@@ -76,6 +72,30 @@ function Timer() {
     setTime(time.subtract(1, "seconds"));
     setCount(count + 1);
   }, speed);
+
+  /**
+   * Function called when the focus timer reaches 0.
+   */
+  function endOfFocus(){
+    setTime(ratio.getBreakTime());
+    //Set focusing to false, then set ratio to this ratio.
+    //Must call setRatio to update the ratio state hook.
+    ratio.setFocus(false);
+    setRatio(ratio);
+    setCounter(counter + 1);
+  }
+
+  /**
+   * Function called when the break timer reaches 0.
+   */
+  function endOfBreak(){
+    setTime(ratio.getFocusTime());
+    //Set fousing to true, thenset ratio to this ratio instance.
+    //Must call setRatio to update the ratio state hook.
+    ratio.setFocus(true);
+    setRatio(ratio);
+    setSpeed(null);
+  }
 
   /**
    * Starts the timer.
@@ -125,6 +145,26 @@ function Timer() {
     setEdit(!editing);
   }
 
+  /**
+   * Function called when it is time for the alarm to sound.
+   */
+  function handleAlarm(){
+    window.Howler.mute(false);
+    setMuteVisible(true);
+    sound.play();
+  }
+
+  /**
+   * Function triggered when the mute button is clicked.
+   */
+  function stopAlarm(e){
+    e.preventDefault();
+    window.Howler.mute(true);
+    setMuteVisible(false);
+  }
+  
+ 
+
   return (
     <div className="Container">
       <div className="TimerContainer">
@@ -143,6 +183,11 @@ function Timer() {
           </Button>
         </div>
       </div>
+      <Zoom in={muteVisible}>
+      <Fab id="snooze" onClick={stopAlarm}>
+        <AlarmOffIcon />
+      </Fab>
+      </Zoom>
       <Fab id="edit" color="secondary" aria-label="edit" onClick={handleEdit}>
         <EditIcon />
       </Fab>

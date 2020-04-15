@@ -19,6 +19,15 @@
     align-items: center;
     font-size: 10vw;
 }
+@media screen and (min-width: 1024px) {
+    .TimerContainer {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        font-size: 8vw;
+    }
+}
 
 .TimerButtons {
     font: 100%/1.75 'Merriweather';
